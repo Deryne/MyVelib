@@ -78,17 +78,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         runBlocking{//ne bloque pas
             val result = service.getUsers()
             Log.d(TAG, "synchroAPI: ${result.data.stations}")
-            /*val users = result.results
+            val users = result.data.stations
             users.map{
-                Station(it.capacity, it.lat, it.lon, it.name, it.rental_methods, it.stationCode, it.station_id)
+                Station(it.capacity, it.lat, it.lon, it.name, it.stationCode, it.station_id)
             }
-                .map{
-                    stations.add(it)
-                    val station = LatLng(it.lat, it.lon)
-                    mMap.addMarker(MarkerOptions().position(station).title("Marker"))
+            .map{
+                stations.add(it)
+                val station = LatLng(it.lat, it.lon)
+                mMap.addMarker(MarkerOptions().position(station).title(it.name))
 
-
-                }*/
+            }
         }
 
 
