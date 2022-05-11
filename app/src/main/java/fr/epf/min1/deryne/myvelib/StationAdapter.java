@@ -59,7 +59,10 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.ViewHold
     public void onBindViewHolder(@NonNull StationAdapter.ViewHolder holder, int position) {
     final StationItem stationItem = stationItems.get(position);
 
-    readCursorData();
+    readCursorData(stationItem, holder);
+    holder.imageView.setImageResource(stationItem.getImageResource());
+    holder.titleTextView.setText(stationItem.getTitle());
+
 
     }
 
