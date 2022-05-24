@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import fr.epf.min1.deryne.myvelib.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
+    private var ArrayList<StationItem> stationItem = new ArrayList<>();
+
 
     private var _binding: FragmentHomeBinding? = null
 

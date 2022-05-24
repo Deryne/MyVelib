@@ -67,11 +67,12 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.ViewHold
     }
 
     private void readCursorData(StationItem stationItem, ViewHolder viewHolder ) {
-        Cursor cursor = FavDB.read_all_data(stationItem, getKey_id());
+        Cursor cursor = favDB.read_all_data(stationItem.getKey_id());
         SQLiteDatabase db = favDB.getReadableDatabase();
         try {
             while (cursor.moveToNext()) {
-                String item_fav_status = cursor.getString(cursor.getColumnIndex(FavDB.FAVORITE_STATUS));
+                int columnIndex = cursor.getColumnIndex(FavDB.FAVORITE_STATUS);
+                String item_fav_status = cursor.getString(columnIndex);
                 stationItem.setFavStatus(item_fav_status);
 
                 //aller voir le staus favori
@@ -105,7 +106,7 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
+           // imageView = itemView.findViewById(R.id.imageView);
             titleTextView = itemView.findViewById(R.id.titleTextView);
             favBtn = itemView.findViewById(R.id.favBtn);
 
@@ -126,7 +127,7 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.ViewHold
                         favBtn.setBackgroundResource(R.drawable.ic_favorite_red_24dp);
                     } else {
                         stationItem.setFavStatus("0");
-                        favBtn.remove_fav(stationItem.getKey_id());
+                        favDB.remove_fav(stationItem.getKey_id());
                         favBtn.setBackgroundResource(R.drawable.ic_favorite_shadow_24dp);
 
                     }
