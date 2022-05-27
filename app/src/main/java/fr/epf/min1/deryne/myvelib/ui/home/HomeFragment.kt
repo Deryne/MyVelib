@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import fr.epf.min1.deryne.myvelib.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
-    private var ArrayList<StationItem> stationItem = new ArrayList<>();
 
 
     private var _binding: FragmentHomeBinding? = null
@@ -18,6 +17,8 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
