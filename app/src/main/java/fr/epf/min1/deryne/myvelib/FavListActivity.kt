@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 //import androidx.navigation.ui.AppBarConfiguration
 //import androidx.navigation.ui.setupActionBarWithNavController
 //import androidx.navigation.ui.setupWithNavController
-import fr.epf.min1.deryne.myvelib.databinding.ActivityFavListBinding
+//import fr.epf.min1.deryne.myvelib.databinding.ActivityFavListBinding
 
 //class FavListActivity : AppCompatActivity() {
 

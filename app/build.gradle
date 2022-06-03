@@ -71,13 +71,13 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 
 
-    //Room database
+
     def room_version="2.4.2"
     implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
-    kapt "android.arch.lifecycle:compiler:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     // Maps SDK for Android KTX Library
    // implementation 'com.google.maps.android:maps-ktx:3.3.0'

@@ -11,10 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyVelib">
-        <activity
-            android:name=".FavListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_fav_list" />
+
         <activity
             android:name=".ListFavorisActivity"
             android:exported="true"/>
