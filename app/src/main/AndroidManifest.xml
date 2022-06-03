@@ -15,6 +15,11 @@
             android:name=".FavListActivity"
             android:exported="false"
             android:label="@string/title_activity_fav_list" />
+        <activity
+            android:name=".ListFavorisActivity"
+            android:exported="true"/>
+        <activity android:name=".DetailsStationVelibActivity"
+            android:exported="true"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
