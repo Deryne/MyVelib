@@ -1,5 +1,6 @@
 package fr.epf.min1.deryne.myvelib
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibInformationAPI
+import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibLieu
+import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibStatus
+import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibStatusAPI
 import fr.epf.min1.deryne.myvelib.databinding.ActivityMapsBinding
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -17,12 +22,17 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+
 private const val TAG = "MapsActivity"
-val stations : MutableList<Station> =  mutableListOf() //liste vide //
+val listStations: MutableList<StationVelib> = mutableListOf() //liste vide //
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+    private var listStationInfo: List<StationVelibLieu> = listOf()
 
+    private var listStationStatus: List<StationVelibStatus> = listOf()
+
+    //elles seront dispos partout dans cette classe
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
@@ -73,26 +83,50 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .build()
 
 
-        val service =  retrofit.create(Velibs::class.java)
+        val service = retrofit.create(StationVelibStatusAPI::class.java)
 
-        runBlocking{//ne bloque pas
-            val result = service.getUsers()
+        runBlocking {//ne bloque pas
+            val result = service.getStatusStation()
             Log.d(TAG, "synchroAPI: ${result.data.stations}")
-            val users = result.data.stations
-            users.map{
-                Station(it.capacity, it.lat, it.lon, it.name, it.stationCode, it.station_id)
-            }
-            .map{
-                stations.add(it)
-                val station = LatLng(it.lat, it.lon)
-                mMap.addMarker(MarkerOptions().position(station).title(it.name))
-
-            }
+            listStationStatus = result.data.stations
         }
 
 
+        val serviceInfo = retrofit.create(StationVelibInformationAPI::class.java)
+
+        runBlocking {//ne bloque pas
+            val result = serviceInfo.getLieuStation()
+            Log.d(TAG, "synchroAPI: ${result.data.stations}")
+            listStationInfo = result.data.stations
+
+        }
+        listStationInfo.zip(listStationStatus).map {
+            StationVelib(
+                it.first.station_id,
+                it.first.name,
+                it.first.lat,
+                it.first.lon,
+                it.first.capacity,
+                it.second.num_bikes_available,
+                it.second.num_docks_available,
+            )
+        }.map {
+            listStations.add(it)
+            val stationId = it.station_id
+            val station = LatLng(it.lat, it.lon)
+            mMap.addMarker(MarkerOptions().position(station).title(it.name))
+            mMap.setOnInfoWindowClickListener {
+                val intent = Intent(this, DetailsStationVelibActivity::class.java)
+                intent.putExtra("station_id", stationId)
+                startActivity(intent)
+            }
+
+
+        }
 
 
     }
 
+
 }
+

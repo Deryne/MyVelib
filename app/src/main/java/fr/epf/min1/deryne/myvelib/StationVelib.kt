@@ -8,8 +8,8 @@ import java.io.Serializable
 data class StationVelib(
     @PrimaryKey val station_id:Long,
     val name:String,
-    val lat:Float,
-    val lon:Float,
+    val lat: Double,
+    val lon:Double,
     val capacity:Int,
     val nbrVelosDispo :Int,
     val nbrDockDispo:Int,
