@@ -29,7 +29,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 
 private const val TAG = "MapsActivity"
-val listStations: MutableList<StationVelib> = mutableListOf() //liste vide //
+var listStations: MutableList<StationVelib> = mutableListOf() //liste vide //
 var ListFavoris: List<favoris> = listOf()//liste fav
 
 
@@ -132,8 +132,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         val dbFavoris = FavorisDataBase.createDatabase(this)
         val favorisDao = dbFavoris.stationvelibDaoFav()// on a accès aux fonctionnalités de la DAO !!
-
-
+        runBlocking{
+            ListFavoris = favorisDao.getAll()
+        }
+        dbFavoris.close()
 
     }
 //    private fun saveFav(marker: Marker){

@@ -11,11 +11,11 @@
 
         <ImageView
             android:layout_width="50dp"
-            tools:src="@drawable/logovelib"
+            android:src="@drawable/velibimage"
             android:layout_height="50dp"
-            android:contentDescription="logo application velib">
+            android:contentDescription="logo application velib"/>
 
-        </ImageView>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,14 +26,13 @@
                 android:id="@+id/adapter_stationvelib_name_textview"
                 android:layout_width="match_parent"
                 tools:text="Nom Station"
-                android:layout_height="wrap_content">
-            </TextView>
+                android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/adapter_stationvelib_id_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ID station">
-            </TextView>
+                android:text="Numéro"/>
+
 
         </LinearLayout>
 

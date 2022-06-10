@@ -13,10 +13,13 @@ private const val TAG = "ListFavorisActivity"
 
 class ListFavorisActivity(): AppCompatActivity(){
 
-    var listFavorisRecyclerview : RecyclerView? = null
+    var FavorisAdapter: FavorisAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ListFavoris.forEach{
+            listStations.filter {  }
+        }
         setContentView(R.layout.activity_list_favoris)
 
         //val favoris = intent.getSerializableExtra( "listFavoris" ) as ArrayList<StationVelib>
@@ -27,9 +30,9 @@ class ListFavorisActivity(): AppCompatActivity(){
 //        val velibDao = db.stationvelibDao()
 //        val favoris: MutableList<StationVelib> = velibDao.getAll().toMutableList()
 
-        listFavorisRecyclerview = findViewById<RecyclerView>(R.id.list_favoris_recyclerview)
+        FavorisAdapter = findViewById<RecyclerView>(R.id.list_favoris_recyclerview)
 
-        listFavorisRecyclerview?.layoutManager =
+        FavorisAdapter?.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
        // listFavorisRecyclerview?.adapter = StationVelibAdapter(favoris)
