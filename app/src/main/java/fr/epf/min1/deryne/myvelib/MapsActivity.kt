@@ -4,17 +4,22 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Button
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.room.Database
+import androidx.room.Room
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibInformationAPI
-import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibLieu
-import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibStatus
-import fr.epf.min1.deryne.myvelib.Labbegette.StationVelibStatusAPI
+import fr.epf.min1.deryne.myvelib.Labbegette.*
 import fr.epf.min1.deryne.myvelib.databinding.ActivityMapsBinding
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -25,6 +30,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 private const val TAG = "MapsActivity"
 val listStations: MutableList<StationVelib> = mutableListOf() //liste vide //
+var ListFavoris: List<favoris> = listOf()//liste fav
+
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -123,10 +130,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         }
+        val dbFavoris = FavorisDataBase.createDatabase(this)
+        val favorisDao = dbFavoris.stationvelibDaoFav()// on a accès aux fonctionnalités de la DAO !!
+
 
 
     }
+//    private fun saveFav(marker: Marker){
+//        val markerName = marker.title
+//        findViewById<Button>(R.id.fav_button).setOnClickListener{
+//            val idStation = marker.snippet
+//            val stationFav = listStations.find {it.station_id.toString()==idStation}
+//            if (stationFav != null) {
+//                //favoris.add(stationFav)
+//                Toast.makeText(this@MapsActivity, "La station $markerName a été ajouté aux favoris", Toast.LENGTH_SHORT).show()
+//
+//                val db = Room.databaseBuilder(
+//                    applicationContext,
+//
+//                    Database.AppDatabase::class.java, "database-name"
+//                ).allowMainThreadQueries().build()
+//
+//                val velibDao = db.stationvelibDao()
+//                velibDao.insertStation(stationFav)
+//                Log.d(TAG, "added : $stationFav")
+//
+//            }
+//        }
+//
+//    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.favorislist -> {
+                startActivity(Intent(this, ListFavorisActivity::class.java))
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
 

@@ -13,6 +13,7 @@ data class StationVelib(
     val capacity:Int,
     val nbrVelosDispo :Int,
     val nbrDockDispo:Int,
+
 )//: Serializable
 
 
