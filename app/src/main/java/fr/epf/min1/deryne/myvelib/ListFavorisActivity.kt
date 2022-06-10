@@ -14,28 +14,21 @@ private const val TAG = "ListFavorisActivity"
 class ListFavorisActivity(): AppCompatActivity(){
 
     var FavorisAdapter: FavorisAdapter? = null
-
+    val ListFavorisStations : MutableList<StationVelib> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ListFavoris.forEach{
-            listStations.filter {  }
+        ListFavoris.forEach{favoris ->
+           val favorisStation = listStations.filter {favoris.station_id == it.station_id }[0]
+            ListFavorisStations.add(favorisStation)
         }
         setContentView(R.layout.activity_list_favoris)
+        val RecyclerView = findViewById<RecyclerView>(R.id.list_favoris_recyclerview)
 
-        //val favoris = intent.getSerializableExtra( "listFavoris" ) as ArrayList<StationVelib>
-//        val db = Room.databaseBuilder(
-//            applicationContext,
-//            Database.AppDatabase::class.java, "database-name"
-//        ).allowMainThreadQueries().build()
-//        val velibDao = db.stationvelibDao()
-//        val favoris: MutableList<StationVelib> = velibDao.getAll().toMutableList()
-
-        FavorisAdapter = findViewById<RecyclerView>(R.id.list_favoris_recyclerview)
-
-        FavorisAdapter?.layoutManager =
+        RecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-       // listFavorisRecyclerview?.adapter = StationVelibAdapter(favoris)
+        FavorisAdapter = FavorisAdapter(ListFavorisStations)
+        RecyclerView.adapter = FavorisAdapter
     }
 
 }

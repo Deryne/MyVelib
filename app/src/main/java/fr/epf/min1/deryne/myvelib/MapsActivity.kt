@@ -122,9 +122,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val stationId = it.station_id
             val station = LatLng(it.lat, it.lon)
             mMap.addMarker(MarkerOptions().position(station).title(it.name))
-            mMap.setOnInfoWindowClickListener {
+            mMap.setOnMarkerClickListener{
                 val intent = Intent(this, DetailsStationVelibActivity::class.java)
                 intent.putExtra("station_id", stationId)
+                Log.d(TAG, "onMapReady: $stationId")
                 startActivity(intent)
             }
 

@@ -2,8 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_margin="8dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,9 +11,9 @@
 
         <ImageView
             android:layout_width="50dp"
-            android:src="@drawable/velibimage"
             android:layout_height="50dp"
-            android:contentDescription="logo application velib"/>
+            android:contentDescription="logo application velib"
+            android:src="@drawable/velibimage" />
 
 
         <LinearLayout
@@ -22,16 +22,18 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="8dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/adapter_stationvelib_name_textview"
                 android:layout_width="match_parent"
-                tools:text="Nom Station"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                tools:text="Nom Station" />
+
             <TextView
                 android:id="@+id/adapter_stationvelib_id_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Numéro"/>
+                android:text="Numéro" />
 
 
         </LinearLayout>

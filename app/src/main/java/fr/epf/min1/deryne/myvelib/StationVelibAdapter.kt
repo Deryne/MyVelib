@@ -34,7 +34,7 @@ class StationVelibAdapter(val favoris: MutableList<StationVelib>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavorisVIewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val velibView = inflater.inflate(R.layout.adapter_station_velib, parent, false)
+        val velibView = inflater.inflate(R.layout.activity_favoris_adapter, parent, false)
         return FavorisVIewHolder(velibView)
     }
 

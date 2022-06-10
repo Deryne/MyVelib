@@ -11,12 +11,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyVelib">
-
+        <activity
+            android:name=".FavorisAdapter"
+            android:exported="false" />
         <activity
             android:name=".ListFavorisActivity"
-            android:exported="true"/>
-        <activity android:name=".DetailsStationVelibActivity"
-            android:exported="true"/>
+            android:exported="true" />
+        <activity
+            android:name=".DetailsStationVelibActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

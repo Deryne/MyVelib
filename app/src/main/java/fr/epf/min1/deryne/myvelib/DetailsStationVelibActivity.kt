@@ -21,7 +21,7 @@ class DetailsStationVelibActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details_station_velib)
         val stationId = intent.getLongExtra("station_id", 0)
-        val d = Log.d(TAG, "onCreate: $stationId")
+        val d = Log.d(TAG, "onCreateB: $stationId")
         val stationSelectionee = listStations.filter { station -> station.station_id == stationId }[0]
 
 
@@ -61,44 +61,8 @@ class DetailsStationVelibActivity: AppCompatActivity() {
             }
             dbFavoris.close()
         }
+        Log.d(TAG, "onCreateB: $stationSelectionee")
 
-
-
-
-
-
-
-
-
-//        var stationStatus = intent.getBooleanExtra("stationStatus", false)
-//        fav_button.setOnClickListener{
-//            Log.d(TAG, "stationStatus : $stationStatus")
-//            if (stationStatus == true){
-//                stationStatus = false
-//
-//        }
-//            else{
-//                stationStatus = true
-//                Log.d(TAG, "mise en fav: $stationStatus")
-//        }
-//            finish()
-//        }
-
-//        override fun onActivityResult(requestCode: Boolean, resultCode: Boolean, data: Intent?){
-//            when(requestCode){
-//
-//
-//            }
-//        }
-
-
-//        val db = databaseBuilder(
-//            applicationContext,
-//            Database.AppDatabase::class.java, "database-name"
-//        ).allowMainThreadQueries().build()
-//
-//        val velibDao = db.stationvelibDao()
-     //   val stationSelectionee=velibDao.loadById(idStationSel)
 
         tvNameStation.text=stationSelectionee.name
         tvIdStation.text= stationSelectionee.station_id.toString()
