@@ -13,17 +13,14 @@ import fr.epf.min1.deryne.myvelib.favoris
         @Query("SELECT * FROM stationvelib")
         suspend fun getAll(): List<StationVelib>
 
-        @Query("SELECT * FROM stationvelib WHERE station_id = (:stationId)")
-        suspend fun loadById(stationId:Long): StationVelib
+        @Query("DELETE FROM stationvelib")
+        suspend fun deleteAll()
 
-        /*@Query("SELECT * FROM stationvelib WHERE fav='true'")
-        fun loadAllFav(): List<StationVelib>
 
-        @Insert
-        fun insertStation(stations:List<StationVelib>)*/
+
 
         @Insert
-        suspend fun insertStation(station: StationVelib)
+        suspend fun insertStation(listStation: List<StationVelib>)
 
 
 

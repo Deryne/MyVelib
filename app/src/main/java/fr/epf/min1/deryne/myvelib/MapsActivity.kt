@@ -1,6 +1,11 @@
 package fr.epf.min1.deryne.myvelib
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.ClusterManager
 import fr.epf.min1.deryne.myvelib.Labbegette.*
 import fr.epf.min1.deryne.myvelib.databinding.ActivityMapsBinding
 import kotlinx.coroutines.runBlocking
@@ -33,11 +39,12 @@ var listStations: MutableList<StationVelib> = mutableListOf() //liste vide //
 var ListFavoris: List<favoris> = listOf()//liste fav
 
 
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var listStationInfo: List<StationVelibLieu> = listOf()
 
     private var listStationStatus: List<StationVelibStatus> = listOf()
+    private lateinit var clusterManager: ClusterManager<StationVelib>
+
 
     //elles seront dispos partout dans cette classe
     private lateinit var mMap: GoogleMap
@@ -54,7 +61,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        mapFragment.getMapAsync { googleMap ->
+            setUpClusterer(googleMap, this)
+        }
 
+
+    }
+
+    private fun setUpClusterer(map: GoogleMap, context: Context) {
+        // Position the map.
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(48.856614, 2.3522219), 10f))
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        clusterManager = ClusterManager(context, map)
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        map.setOnCameraIdleListener(clusterManager)
+
+        // Add cluster items (markers) to the cluster manager.
+        clusterManager.addItems(listStations)
+        clusterManager.cluster()
+
+        clusterManager.setOnClusterItemClickListener {
+            val intent = Intent(this, DetailsStationVelibActivity::class.java)
+            intent.putExtra("station_id", it.station_id)
+            startActivity(intent)
+            true
+        }
     }
 
     /**
@@ -69,99 +104,81 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        if (checkForInternet(this)){
+            val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+            val client = OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build()
 
 
-        val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-        val client = OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
+                .addConverterFactory(MoshiConverterFactory.create())
+                .client(client)
+                .build()
 
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
-            .addConverterFactory(MoshiConverterFactory.create())
-            .client(client)
-            .build()
+            val service = retrofit.create(StationVelibStatusAPI::class.java)
 
-
-        val service = retrofit.create(StationVelibStatusAPI::class.java)
-
-        runBlocking {//ne bloque pas
-            val result = service.getStatusStation()
-            Log.d(TAG, "synchroAPI: ${result.data.stations}")
-            listStationStatus = result.data.stations
-        }
-
-
-        val serviceInfo = retrofit.create(StationVelibInformationAPI::class.java)
-
-        runBlocking {//ne bloque pas
-            val result = serviceInfo.getLieuStation()
-            Log.d(TAG, "synchroAPI: ${result.data.stations}")
-            listStationInfo = result.data.stations
-
-        }
-        listStationInfo.zip(listStationStatus).map {
-            StationVelib(
-                it.first.station_id,
-                it.first.name,
-                it.first.lat,
-                it.first.lon,
-                it.first.capacity,
-                it.second.num_bikes_available,
-                it.second.num_docks_available,
-            )
-        }.map {
-            listStations.add(it)
-            val stationId = it.station_id
-            val station = LatLng(it.lat, it.lon)
-            mMap.addMarker(MarkerOptions().position(station).title(it.name))
-            mMap.setOnMarkerClickListener{
-                val intent = Intent(this, DetailsStationVelibActivity::class.java)
-                intent.putExtra("station_id", stationId)
-                Log.d(TAG, "onMapReady: $stationId")
-                startActivity(intent)
+            runBlocking {//ne bloque pas
+                val result = service.getStatusStation()
+                Log.d(TAG, "synchroAPI: ${result.data.stations}")
+                listStationStatus = result.data.stations
             }
 
 
+            val serviceInfo = retrofit.create(StationVelibInformationAPI::class.java)
+
+            runBlocking {//ne bloque pas
+                val result = serviceInfo.getLieuStation()
+                Log.d(TAG, "synchroAPI: ${result.data.stations}")
+                listStationInfo = result.data.stations
+
+            }
+            listStationInfo.zip(listStationStatus).map {
+                StationVelib(
+                    it.first.station_id,
+                    it.first.name,
+                    it.first.lat,
+                    it.first.lon,
+                    it.first.capacity,
+                    it.second.num_bikes_available,
+                    it.second.num_docks_available,
+                )
+            }.map {
+                listStations.add(it)
+            }
+            val dbStationVelib = StationDatabase.createDatabase(this)
+            val stationDao =
+                dbStationVelib.stationvelibDao()// on a accès aux fonctionnalités de la DAO !!
+            runBlocking {
+                stationDao.deleteAll()
+                stationDao.insertStation(listStations)
+            }
+            dbStationVelib.close()
+        }else {
+            val dbStationVelib = StationDatabase.createDatabase(this)
+            val stationDao =
+                dbStationVelib.stationvelibDao()// on a accès aux fonctionnalités de la DAO !!
+            runBlocking {
+               listStations = stationDao.getAll() as MutableList<StationVelib>
+            }
+            dbStationVelib.close()
         }
+
         val dbFavoris = FavorisDataBase.createDatabase(this)
-        val favorisDao = dbFavoris.stationvelibDaoFav()// on a accès aux fonctionnalités de la DAO !!
-        runBlocking{
+        val favorisDao =
+            dbFavoris.stationvelibDaoFav()// on a accès aux fonctionnalités de la DAO !!
+        runBlocking {
             ListFavoris = favorisDao.getAll()
         }
         dbFavoris.close()
 
+
     }
-//    private fun saveFav(marker: Marker){
-//        val markerName = marker.title
-//        findViewById<Button>(R.id.fav_button).setOnClickListener{
-//            val idStation = marker.snippet
-//            val stationFav = listStations.find {it.station_id.toString()==idStation}
-//            if (stationFav != null) {
-//                //favoris.add(stationFav)
-//                Toast.makeText(this@MapsActivity, "La station $markerName a été ajouté aux favoris", Toast.LENGTH_SHORT).show()
-//
-//                val db = Room.databaseBuilder(
-//                    applicationContext,
-//
-//                    Database.AppDatabase::class.java, "database-name"
-//                ).allowMainThreadQueries().build()
-//
-//                val velibDao = db.stationvelibDao()
-//                velibDao.insertStation(stationFav)
-//                Log.d(TAG, "added : $stationFav")
-//
-//            }
-//        }
-//
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.map_menu, menu)
@@ -169,12 +186,53 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.favorislist -> {
                 startActivity(Intent(this, ListFavorisActivity::class.java))
             }
         }
         return super.onOptionsItemSelected(item)
     }
+
+    @SuppressLint("MissingPermission")
+    private fun checkForInternet(context: Context): Boolean {
+
+        // register activity with the connectivity manager service
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        // if the android version is equal to M
+        // or greater we need to use the
+        // NetworkCapabilities to check what type of
+        // network has the internet connection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            // Returns a Network object corresponding to
+            // the currently active default data network.
+            val network = connectivityManager.activeNetwork ?: return false
+
+            // Representation of the capabilities of an active network.
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            return when {
+                // Indicates this network uses a Wi-Fi transport,
+                // or WiFi has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+
+                // Indicates this network uses a Cellular transport. or
+                // Cellular has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+
+                // else return false
+                else -> false
+            }
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
+    }
+
 }
 
