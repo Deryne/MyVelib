@@ -61,7 +61,6 @@ class DetailsStationVelibActivity: AppCompatActivity() {
             }
             dbFavoris.close()
         }
-        Log.d(TAG, "onCreateB: $stationSelectionee")
 
 
         tvNameStation.text=stationSelectionee.name

@@ -125,7 +125,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             runBlocking {//ne bloque pas
                 val result = service.getStatusStation()
-                Log.d(TAG, "synchroAPI: ${result.data.stations}")
                 listStationStatus = result.data.stations
             }
 
@@ -134,7 +133,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             runBlocking {//ne bloque pas
                 val result = serviceInfo.getLieuStation()
-                Log.d(TAG, "synchroAPI: ${result.data.stations}")
                 listStationInfo = result.data.stations
 
             }
